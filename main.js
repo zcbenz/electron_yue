@@ -31,30 +31,24 @@ app.once('ready', () => {
 
   // The loading indicator.
   const loadingIndicator = gui.GifPlayer.create()
-  loadingIndicator.setStyle({width: 40, height: 40})
+  loadingIndicator.setStyle({
+    flex: 1,
+  })
   const gifPath = path.join(__dirname, 'assets', 'loading@2x.gif')
   loadingIndicator.setImage(gui.Image.createFromPath(gifPath))
   loadingIndicator.setAnimating(true)
-  const loadingIndicatorWrapper = gui.Container.create()
-  loadingIndicatorWrapper.addChildView(loadingIndicator)
-  loadingIndicatorWrapper.setStyle({
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 50,
-    minHeight: 50,
-  })
-  contentView.addChildView(loadingIndicatorWrapper)
+  contentView.addChildView(loadingIndicator)
 
   // Use Electron's WebContents.
   page = webContents.create({nodeIntegration: true})
-  setTimeout(() => { page.loadURL('https://teams.microsoft.com') }, 5000)
+  // Make the loading indicator show for a while.
+  setTimeout(() => { page.loadFile(__dirname + '/index.html') }, 1000)
 
   // Replace loading indicator with webContents after page is loaded.
   page.once('did-finish-load', () => {
     const chrome = gui.ChromeView.create(page.getNativeView())
     chrome.setStyle({flex: 1})
-    contentView.removeChildView(loadingIndicatorWrapper)
+    contentView.removeChildView(loadingIndicator)
     contentView.addChildView(chrome)
   })
 
